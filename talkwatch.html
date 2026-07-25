@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>TalkWatch by MathHive</title>
+<link rel="icon" href="assets/images/talkwatch-branding.jpg" type="image/jpeg">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Orbitron',monospace;overflow:hidden;position:relative;}
 
 /* BACKGROUND GRID */
-body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(239,159,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(239,159,39,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(239,159,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(239,159,39,0.03) 1px,transparent 1px);background-size:100px 100px;z-index:0;}
 
 /* GLOW ORBS */
 .orb{position:fixed;border-radius:50%;filter:blur(80px);z-index:0;opacity:0.15;}
@@ -35,7 +36,7 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
 .clock-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(239,159,39,0.15);}
 .clock-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(239,159,39,0.08);}
 .clock-inner{text-align:center;}
-.time-display{font-size:52px;font-weight:900;color:#EF9F27;letter-spacing:.05em;text-shadow:0 0 20px rgba(239,159,39,0.8),0 0 40px rgba(239,159,39,0.4),0 0 80px rgba(239,159,39,0.2);line-height:1;font-family:'Orbitron',monospace;}
+.time-display{font-size:52px;font-weight:900;color:#EF9F27;letter-spacing:.05em;text-shadow:0 0 20px rgba(239,159,39,0.8),0 0 40px rgba(239,159,39,0.4),0 0 80px rgba(239,159,39,0.2);line-height:1;}
 .ampm{font-size:18px;font-weight:700;color:#FAC775;letter-spacing:.2em;margin-top:4px;text-shadow:0 0 10px rgba(250,199,117,0.6);}
 .seconds{font-size:13px;color:rgba(239,159,39,0.5);letter-spacing:.3em;margin-top:6px;font-family:'Share Tech Mono',monospace;}
 
@@ -48,7 +49,7 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
 
 /* MIC BUTTON */
 .mic-section{margin-bottom:1.5rem;}
-.mic-btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#EF9F27,#BA7517);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;box-shadow:0 0 20px rgba(239,159,39,0.4);transition:transform .15s,box-shadow .15s;position:relative;}
+.mic-btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#EF9F27,#BA7517);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 4px 15px rgba(239,159,39,0.3);transition:all .3s;font-size:28px;}
 .mic-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(239,159,39,0.6);}
 .mic-btn.listening{animation:micPulse 1s ease-in-out infinite;background:linear-gradient(135deg,#FAC775,#EF9F27);}
 @keyframes micPulse{0%,100%{box-shadow:0 0 20px rgba(239,159,39,0.4);}50%{box-shadow:0 0 40px rgba(239,159,39,0.9);}}
@@ -68,7 +69,7 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
 .alarm-section{width:100%;}
 .alarm-title{font-size:10px;color:rgba(239,159,39,0.5);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.65rem;}
 .alarm-row{display:flex;gap:8px;align-items:center;}
-.alarm-input{flex:1;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.2);border-radius:8px;padding:.55rem .75rem;font-size:13px;color:#EF9F27;font-family:'Share Tech Mono',monospace;outline:none;}
+.alarm-input{flex:1;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.2);border-radius:8px;padding:.55rem .75rem;font-size:13px;color:#EF9F27;font-family:'Share Tech Mono',monospace;}
 .alarm-input::placeholder{color:rgba(239,159,39,0.3);}
 .alarm-input:focus{border-color:#EF9F27;}
 .alarm-btn{background:#EF9F27;color:#000;border:none;border-radius:8px;padding:.55rem .9rem;font-size:12px;font-weight:700;cursor:pointer;font-family:'Orbitron',monospace;white-space:nowrap;}
@@ -113,7 +114,7 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
         </div>
       </div>
       <!-- LOCATION AROUND RING -->
-      <div id="location-ring" style="position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(239,159,39,0.6);text-align:center;letter-spacing:.08em;">
+      <div id="location-ring" style="position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(239,159,39,0.5);">
         📍 Last known location: <span id="ring-location" style="color:#EF9F27;">fetching...</span>
       </div>
     </div>
@@ -163,7 +164,7 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
         <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#EF9F27;">SAY <strong>"TIME"</strong></span>
         <span style="font-size:11px;color:rgba(239,159,39,0.5);margin-left:auto;">Announces the time</span>
       </div>
-      <div style="text-align:center;font-size:10px;color:rgba(239,159,39,0.3);margin-top:4px;font-family:'Share Tech Mono',monospace;letter-spacing:.1em;">⚙️ Set screen timeout to Never in Settings</div>
+      <div style="text-align:center;font-size:10px;color:rgba(239,159,39,0.3);margin-top:4px;font-family:'Share Tech Mono',monospace;letter-spacing:.1em;">⚙️ Set screen timeout to Never in Settings for best experience</div>
     </div>
   </div>
 
@@ -198,10 +199,10 @@ body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(2
 
 <!-- PAID FEATURES BAR -->
 <div style="position:relative;z-index:1;display:flex;gap:10px;justify-content:center;margin-bottom:1.25rem;width:100%;max-width:420px;padding:0 1.5rem;">
-  <button onclick="findPhone()" style="flex:1;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.3);border-radius:10px;padding:.65rem;color:#EF9F27;font-family:'Orbitron',monospace;font-size:11px;cursor:pointer;letter-spacing:.1em;">
+  <button onclick="findPhone()" style="flex:1;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.3);border-radius:10px;padding:.65rem;color:#EF9F27;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;">
     📱 SAY "PHONE"<br><span style="font-size:9px;opacity:0.6;">TalkWatch — Find lost phone</span>
   </button>
-  <button onclick="triggerEmergencyWarning('911')" style="flex:1;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:10px;padding:.65rem;color:#ff6666;font-family:'Orbitron',monospace;font-size:11px;cursor:pointer;letter-spacing:.1em;">
+  <button onclick="triggerEmergencyWarning('911')" style="flex:1;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:10px;padding:.65rem;color:#ff6666;font-family:'Orbitron',monospace;font-size:11px;font-weight:700;cursor:pointer;line-height:1.4;">
     🚨 SAY "CALL 911"<br><span style="font-size:9px;opacity:0.6;">TalkCall EMERGENT — sends location</span>
   </button>
 </div>
@@ -294,7 +295,7 @@ function announceStamp() {
   u.rate = 0.9; u.pitch = 1.2; u.volume = 1;
   // Use a female voice for stamp
   const voices = window.speechSynthesis.getVoices();
-  const female = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Karen') || v.name.includes('Moira') || v.name.includes('female') || (v.lang.startsWith('en') && v.name.includes('Google US'))) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+  const female = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Karen') || v.name.includes('Moira') || v.name.includes('female') || (v.lang.startsWith('en') && v.name.includes('Female'))) || voices.find(v => v.lang.startsWith('en')) || voices[0];
   if (female) u.voice = female;
   window.speechSynthesis.speak(u);
 }
