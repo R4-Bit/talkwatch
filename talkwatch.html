@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>TalkWatch by MathHive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#000;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Orbitron',monospace;overflow:hidden;position:relative;}
+
+/* BACKGROUND GRID */
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(rgba(239,159,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(239,159,39,0.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;}
+
+/* GLOW ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);z-index:0;opacity:0.15;}
+.orb1{width:400px;height:400px;background:#EF9F27;top:-100px;left:-100px;}
+.orb2{width:300px;height:300px;background:#FAC775;bottom:-80px;right:-80px;}
+
+.container{position:relative;z-index:1;text-align:center;padding:1.5rem;width:100%;max-width:420px;}
+
+/* LOGO */
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.5rem;}
+.cube-wrap{width:36px;height:36px;perspective:90px;}
+.cube{width:36px;height:36px;position:relative;transform-style:preserve-3d;transform:rotateX(-20deg) rotateY(30deg);}
+.face{position:absolute;width:25px;height:25px;border:2px solid #000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:9px;}
+.face.front{background:#EF9F27;color:#000;transform:translateZ(12px);top:5px;left:5px;}
+.face.top{background:#FAC775;transform:rotateX(90deg) translateZ(12px);top:-7px;left:5px;}
+.face.right{background:#BA7517;color:#FAEEDA;transform:rotateY(90deg) translateZ(12px);top:5px;left:17px;}
+.logo-text{font-size:14px;font-weight:700;color:#EF9F27;letter-spacing:.2em;}
+
+/* CLOCK DISPLAY */
+.clock-wrap{position:relative;margin:0 auto 1rem;}
+.clock-ring{width:280px;height:280px;border-radius:50%;border:2px solid rgba(239,159,39,0.3);margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;}
+.clock-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(239,159,39,0.15);}
+.clock-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(239,159,39,0.08);}
+.clock-inner{text-align:center;}
+.time-display{font-size:52px;font-weight:900;color:#EF9F27;letter-spacing:.05em;text-shadow:0 0 20px rgba(239,159,39,0.8),0 0 40px rgba(239,159,39,0.4),0 0 80px rgba(239,159,39,0.2);line-height:1;font-family:'Orbitron',monospace;}
+.ampm{font-size:18px;font-weight:700;color:#FAC775;letter-spacing:.2em;margin-top:4px;text-shadow:0 0 10px rgba(250,199,117,0.6);}
+.seconds{font-size:13px;color:rgba(239,159,39,0.5);letter-spacing:.3em;margin-top:6px;font-family:'Share Tech Mono',monospace;}
+
+/* DATE */
+.date-display{font-size:13px;color:#FAC775;letter-spacing:.15em;margin-bottom:1.5rem;opacity:0.8;}
+
+/* PULSE RING */
+.pulse-ring{position:absolute;inset:0;border-radius:50%;border:2px solid #EF9F27;opacity:0;animation:pulse 3s ease-out infinite;}
+@keyframes pulse{0%{transform:scale(1);opacity:0.6;}100%{transform:scale(1.15);opacity:0;}}
+
+/* MIC BUTTON */
+.mic-section{margin-bottom:1.5rem;}
+.mic-btn{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#EF9F27,#BA7517);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;box-shadow:0 0 20px rgba(239,159,39,0.4);transition:transform .15s,box-shadow .15s;position:relative;}
+.mic-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(239,159,39,0.6);}
+.mic-btn.listening{animation:micPulse 1s ease-in-out infinite;background:linear-gradient(135deg,#FAC775,#EF9F27);}
+@keyframes micPulse{0%,100%{box-shadow:0 0 20px rgba(239,159,39,0.4);}50%{box-shadow:0 0 40px rgba(239,159,39,0.9);}}
+.mic-icon{font-size:28px;}
+.mic-label{font-size:10px;color:rgba(239,159,39,0.6);letter-spacing:.15em;text-transform:uppercase;}
+.awake-badge{font-size:10px;color:rgba(239,159,39,0.4);letter-spacing:.1em;margin-top:.5rem;}
+
+/* STATUS */
+.status{font-size:12px;color:rgba(239,159,39,0.5);letter-spacing:.1em;min-height:18px;margin-bottom:1rem;font-family:'Share Tech Mono',monospace;}
+.status.active{color:#EF9F27;}
+
+/* QUOTE BOX */
+.quote-box{background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.15);border-radius:12px;padding:.85rem 1rem;margin-bottom:1.25rem;min-height:60px;display:flex;align-items:center;justify-content:center;}
+.quote-text{font-size:12px;color:#FAC775;line-height:1.6;font-family:'Share Tech Mono',monospace;text-align:center;opacity:0.85;}
+
+/* ALARM */
+.alarm-section{width:100%;}
+.alarm-title{font-size:10px;color:rgba(239,159,39,0.5);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.65rem;}
+.alarm-row{display:flex;gap:8px;align-items:center;}
+.alarm-input{flex:1;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.2);border-radius:8px;padding:.55rem .75rem;font-size:13px;color:#EF9F27;font-family:'Share Tech Mono',monospace;outline:none;}
+.alarm-input::placeholder{color:rgba(239,159,39,0.3);}
+.alarm-input:focus{border-color:#EF9F27;}
+.alarm-btn{background:#EF9F27;color:#000;border:none;border-radius:8px;padding:.55rem .9rem;font-size:12px;font-weight:700;cursor:pointer;font-family:'Orbitron',monospace;white-space:nowrap;}
+.alarm-btn:hover{background:#FAC775;}
+.alarm-list{margin-top:.65rem;display:flex;flex-direction:column;gap:6px;}
+.alarm-item{display:flex;align-items:center;gap:8px;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.1);border-radius:8px;padding:.45rem .75rem;font-size:11px;color:#FAC775;font-family:'Share Tech Mono',monospace;}
+.alarm-item .alarm-time{color:#EF9F27;font-weight:700;min-width:50px;}
+.alarm-item .del-btn{margin-left:auto;background:none;border:none;color:rgba(239,159,39,0.4);cursor:pointer;font-size:14px;}
+.alarm-item .del-btn:hover{color:#EF9F27;}
+
+/* RINGING */
+.ringing-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:100;align-items:center;justify-content:center;flex-direction:column;text-align:center;}
+.ringing-overlay.show{display:flex;}
+.ring-emoji{font-size:60px;animation:ringShake .3s ease-in-out infinite;}
+@keyframes ringShake{0%,100%{transform:rotate(-10deg);}50%{transform:rotate(10deg);}}
+.ring-msg{font-size:16px;color:#EF9F27;margin:1rem 0;font-family:'Share Tech Mono',monospace;line-height:1.6;max-width:280px;}
+.dismiss-btn{background:#EF9F27;color:#000;border:none;border-radius:8px;padding:.65rem 1.5rem;font-size:14px;font-weight:700;cursor:pointer;font-family:'Orbitron',monospace;margin-top:.5rem;}
+
+/* FOOTER */
+.footer{position:fixed;bottom:1rem;font-size:10px;color:rgba(239,159,39,0.25);letter-spacing:.1em;z-index:1;}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="container">
+  <div class="logo">
+    <div class="cube-wrap"><div class="cube"><div class="face front">MH</div><div class="face top"></div><div class="face right"></div></div></div>
+    <span class="logo-text">TALKWATCH</span>
+  </div>
+
+  <div class="clock-wrap">
+    <div style="position:relative;display:inline-block;">
+      <div class="clock-ring" onclick="announceTime()" title="Tap to hear the time">
+        <div class="pulse-ring"></div>
+        <div class="clock-inner">
+          <div class="time-display" id="time-display">00:00</div>
+          <div class="ampm" id="ampm-display">AM</div>
+          <div class="seconds" id="sec-display">00 SEC</div>
+        </div>
+      </div>
+      <!-- LOCATION AROUND RING -->
+      <div id="location-ring" style="position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(239,159,39,0.6);text-align:center;letter-spacing:.08em;">
+        📍 Last known location: <span id="ring-location" style="color:#EF9F27;">fetching...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="date-display" id="date-display" style="margin-top:2rem;">Monday, January 1</div>
+
+  <div class="mic-section">
+    <button class="mic-btn" id="mic-btn" onclick="startListening()">
+      <span class="mic-icon">🎤</span>
+    </button>
+    <div class="mic-label">Say CALL 911 to call 911 &nbsp;·&nbsp; Say STOP to end call</div>
+    <div class="awake-badge" id="awake-badge">⚪ Screen always on — loading...</div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div class="quote-box" id="quote-box">
+    <div class="quote-text" id="quote-text"></div>
+  </div>
+
+  <!-- COMMAND GUIDE -->
+  <div style="width:100%;margin-bottom:1.25rem;">
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,50,50,0.05);border:1px solid rgba(255,50,50,0.2);border-radius:8px;padding:.55rem .85rem;">
+        <span style="font-size:14px;">🚨</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#ff6666;">SAY <strong>"CALL 911"</strong></span>
+        <span style="font-size:11px;color:rgba(255,100,100,0.5);margin-left:auto;">Calls 9-1-1 immediately</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(100,200,255,0.05);border:1px solid rgba(100,200,255,0.12);border-radius:8px;padding:.55rem .85rem;">
+        <span style="font-size:14px;">📍</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#88ccff;">SAY <strong>"MY LOCATION"</strong> or <strong>"LOCATION"</strong></span>
+        <span style="font-size:11px;color:rgba(100,200,255,0.5);margin-left:auto;">Sends location over call + to your email</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,50,50,0.05);border:1px solid rgba(255,50,50,0.15);border-radius:8px;padding:.55rem .85rem;">
+        <span style="font-size:14px;">🔴</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#ff6666;">SAY <strong>"STOP"</strong> or <strong>"HANG UP"</strong></span>
+        <span style="font-size:11px;color:rgba(255,100,100,0.5);margin-left:auto;">Ends the call</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.12);border-radius:8px;padding:.55rem .85rem;">
+        <span style="font-size:14px;">📱</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#EF9F27;">SAY <strong>"PHONE"</strong></span>
+        <span style="font-size:11px;color:rgba(239,159,39,0.5);margin-left:auto;">Finds your lost phone</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(239,159,39,0.05);border:1px solid rgba(239,159,39,0.12);border-radius:8px;padding:.55rem .85rem;">
+        <span style="font-size:14px;">⏰</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#EF9F27;">SAY <strong>"TIME"</strong></span>
+        <span style="font-size:11px;color:rgba(239,159,39,0.5);margin-left:auto;">Announces the time</span>
+      </div>
+      <div style="text-align:center;font-size:10px;color:rgba(239,159,39,0.3);margin-top:4px;font-family:'Share Tech Mono',monospace;letter-spacing:.1em;">⚙️ Set screen timeout to Never in Settings</div>
+    </div>
+  </div>
+
+  <div class="alarm-section">
+    <div class="alarm-title">⏰ Set an alarm</div>
+    <div class="alarm-row">
+      <input class="alarm-input" id="alarm-mins" type="number" min="1" max="999" placeholder="Minutes from now...">
+      <button class="alarm-btn" onclick="setAlarm()">SET</button>
+    </div>
+    <div class="alarm-row" style="margin-top:6px;">
+      <input class="alarm-input" id="alarm-msg" type="text" placeholder="Reminder message... (e.g. Move your car!)">
+    </div>
+    <div class="alarm-list" id="alarm-list"></div>
+  </div>
+</div>
+
+<!-- PHONE FINDER OVERLAY -->
+<div class="ringing-overlay" id="phone-overlay" onclick="document.getElementById('phone-overlay').classList.remove('show')">
+  <div style="font-size:60px;animation:ringShake .3s ease-in-out infinite;">📱</div>
+  <div class="ring-msg">YOUR PHONE IS RIGHT HERE!<br><span style="font-size:13px;opacity:0.7;">Follow the sound and vibration!</span></div>
+  <button class="dismiss-btn" onclick="document.getElementById('phone-overlay').classList.remove('show');window.speechSynthesis.cancel();">Found it! ✓</button>
+</div>
+
+<!-- EMERGENCY OVERLAY -->
+<div class="ringing-overlay" id="emergency-overlay" style="background:rgba(80,0,0,0.96);">
+  <div style="font-size:50px;animation:ringShake .3s ease-in-out infinite;">🚨</div>
+  <div class="ring-msg" style="color:#ff4444;font-size:18px;font-weight:900;">9-1-1 IS BEING CALLED</div>
+  <div class="ring-msg" id="location-display" style="font-size:13px;margin-top:.5rem;">📍 Getting your location...</div>
+  <div class="ring-msg" style="font-size:12px;opacity:0.7;margin-top:.5rem;">Your AI voice will speak your location to the responder automatically. Stay calm. Help is on the way.</div>
+  <button class="dismiss-btn" style="background:#ff4444;margin-top:1rem;" onclick="document.getElementById('emergency-overlay').classList.remove('show');window.speechSynthesis.cancel();stopCallStamp();">Cancel</button>
+</div>
+
+<!-- PAID FEATURES BAR -->
+<div style="position:relative;z-index:1;display:flex;gap:10px;justify-content:center;margin-bottom:1.25rem;width:100%;max-width:420px;padding:0 1.5rem;">
+  <button onclick="findPhone()" style="flex:1;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.3);border-radius:10px;padding:.65rem;color:#EF9F27;font-family:'Orbitron',monospace;font-size:11px;cursor:pointer;letter-spacing:.1em;">
+    📱 SAY "PHONE"<br><span style="font-size:9px;opacity:0.6;">TalkWatch — Find lost phone</span>
+  </button>
+  <button onclick="triggerEmergencyWarning('911')" style="flex:1;background:rgba(255,50,50,0.1);border:1px solid rgba(255,50,50,0.3);border-radius:10px;padding:.65rem;color:#ff6666;font-family:'Orbitron',monospace;font-size:11px;cursor:pointer;letter-spacing:.1em;">
+    🚨 SAY "CALL 911"<br><span style="font-size:9px;opacity:0.6;">TalkCall EMERGENT — sends location</span>
+  </button>
+</div>
+
+<!-- RINGING OVERLAY -->
+<div class="ringing-overlay" id="ringing-overlay">
+  <div class="ring-emoji">🔔</div>
+  <div class="ring-msg" id="ring-msg">ALARM!</div>
+  <button class="dismiss-btn" onclick="dismissAlarm()">Dismiss</button>
+</div>
+
+<div class="footer">TALKWATCH by RR · Safety is Everything</div>
+
+<script>
+const QUOTES = [
+  // Motivational
+  "Seize the day — before it seizes you!",
+  "Every minute counts. Make this one legendary.",
+  "The best time to start was yesterday. The second best time is RIGHT NOW.",
+  "Success is rented — and the rent is due every single day.",
+  "You didn't come this far to only come this far.",
+  "Great things never came from comfort zones.",
+  "Push yourself — no one else is going to do it for you.",
+  "Your future self is watching. Make them proud.",
+  "Dream big. Work hard. Stay humble.",
+  "One day or day one — YOU decide.",
+  // Funny
+  "It's not too late to eat a snack. Just saying.",
+  "Time flies — but you're the pilot!",
+  "Technically you're still on time if you run.",
+  "Coffee o'clock is always the right call.",
+  "If in doubt, nap it out. Then get back to work.",
+  "You've survived 100% of your bad days so far. Pretty good odds!",
+  "Life is short. Eat the good snacks.",
+  "Working hard or hardly working? Either way — keep going!",
+  "Your couch misses you. But your goals miss you more.",
+  "That thing you've been putting off? Yeah. That one. Do it.",
+  // Math facts
+  "Math fact: A circle has infinite lines of symmetry!",
+  "Math fact: Zero is the only number that can't be represented in Roman numerals.",
+  "Math fact: The word 'hundred' comes from 'hundrath' meaning 120 — not 100!",
+  "Math fact: A googol is 1 followed by 100 zeros. Google named themselves after it!",
+  "Math fact: Pi has been calculated to over 100 TRILLION digits!",
+  "Math fact: Fibonacci numbers appear everywhere in nature — sunflowers, shells, galaxies!",
+  "Math fact: There are more possible chess games than atoms in the observable universe.",
+  "Math fact: 111,111,111 × 111,111,111 = 12,345,678,987,654,321. Try it!",
+  "Math fact: Slope-intercept form y equals mx plus b — Roland's favorite equation!",
+  "Math fact: A prime number has exactly two factors — 1 and itself. 2 is the only even prime!"
+];
+
+let alarms = [];
+let alarmInterval = null;
+let recognition = null;
+let isListening = false;
+let stampInterval = null;
+let userName = localStorage.getItem('twUserName') || '';
+
+function getUserName() {
+  const n = prompt("Welcome to TalkWatch!\n\nEnter your full name (First Last) for emergency identification:\n(Leave blank to skip)");
+  if (n && n.trim()) {
+    userName = n.trim();
+    localStorage.setItem('twUserName', userName);
+  }
+}
+
+function startCallStamp() {
+  stopCallStamp();
+  // Announce immediately then every 6 seconds
+  announceStamp();
+  stampInterval = setInterval(announceStamp, 6000);
+}
+
+function stopCallStamp() {
+  if (stampInterval) { clearInterval(stampInterval); stampInterval = null; }
+}
+
+function announceStamp() {
+  const nameParts = userName ? userName.trim().split(' ') : [];
+  let stampMsg;
+  if (nameParts.length >= 2) {
+    const last = nameParts[nameParts.length - 1];
+    const first = nameParts[0];
+    stampMsg = `This caller, ${last}, ${first}, is using TalkWatch.`;
+  } else if (nameParts.length === 1) {
+    stampMsg = `This caller, ${nameParts[0]}, is using TalkWatch.`;
+  } else {
+    stampMsg = `This caller is using TalkWatch.`;
+  }
+  const u = new SpeechSynthesisUtterance(stampMsg);
+  u.rate = 0.9; u.pitch = 1.2; u.volume = 1;
+  // Use a female voice for stamp
+  const voices = window.speechSynthesis.getVoices();
+  const female = voices.find(v => v.name.includes('Samantha') || v.name.includes('Victoria') || v.name.includes('Karen') || v.name.includes('Moira') || v.name.includes('female') || (v.lang.startsWith('en') && v.name.includes('Google US'))) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+  if (female) u.voice = female;
+  window.speechSynthesis.speak(u);
+}
+
+// CLOCK
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('time-display').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('ampm-display').textContent = ampm;
+  document.getElementById('sec-display').textContent = `${String(s).padStart(2,'0')} SEC`;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('date-display').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+  checkAlarms(now);
+}
+
+// ANNOUNCE TIME
+function announceTime() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const minText = m === 0 ? "o'clock" : `${m} minutes`;
+  const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  const speech = `The time is ${h} ${minText} ${ampm}. ${quote}`;
+  document.getElementById('quote-text').textContent = `"${quote}"`;
+  speak(speech);
+  document.getElementById('status').textContent = '🔊 Announcing time...';
+  document.getElementById('status').className = 'status active';
+  setTimeout(() => {
+    document.getElementById('status').textContent = 'Ready — say TIME or tap the clock';
+    document.getElementById('status').className = 'status';
+  }, 4000);
+}
+
+// SPEAK — British voice
+function speak(text) {
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.92;
+  utterance.pitch = 1.0;
+  utterance.volume = 1;
+  // Try to find British voice
+  const voices = window.speechSynthesis.getVoices();
+  const british = voices.find(v =>
+    v.lang === 'en-GB' ||
+    v.name.includes('British') ||
+    v.name.includes('UK') ||
+    v.name.includes('Daniel') ||
+    v.name.includes('Oliver')
+  ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+  if (british) utterance.voice = british;
+  window.speechSynthesis.speak(utterance);
+}
+
+// VOICE RECOGNITION
+function startListening() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    document.getElementById('status').textContent = '⚠️ Voice not supported — tap clock instead';
+    announceTime();
+    return;
+  }
+  if (isListening) return;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('mic-btn').classList.add('listening');
+    document.getElementById('status').textContent = '🎤 Listening... say TIME';
+    document.getElementById('status').className = 'status active';
+  };
+  recognition.onresult = (e) => {
+    const said = e.results[0][0].transcript.toLowerCase().trim();
+    if (said.includes('time')) {
+      announceTime();
+    } else if (said.includes('stop') || said.includes('hang up') || said.includes('cancel')) {
+      window.speechSynthesis.cancel();
+      stopCallStamp();
+      document.getElementById('emergency-overlay').classList.remove('show');
+      document.getElementById('phone-overlay').classList.remove('show');
+      speak("Cancelled.");
+    } else if (said.includes('location')) {
+      sendLocation();
+    } else if (said.includes('911') || said.includes('emergency') || said.includes('help') || said.includes('ouch') || said.includes('let me go') || said.includes('get off')) {
+      triggerEmergencyWarning(said);
+    } else if (said.includes('phone') || said.includes('find')) {
+      findPhone();
+    } else if (said.includes('alarm') || said.includes('set')) {
+      document.getElementById('status').textContent = '⏰ Use the alarm box below!';
+    } else {
+      document.getElementById('status').textContent = `Heard: "${said}"`;
+    }
+  };
+  recognition.onerror = () => {
+    document.getElementById('status').textContent = 'Could not hear — try again or tap the clock';
+    document.getElementById('status').className = 'status';
+  };
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById('mic-btn').classList.remove('listening');
+    document.getElementById('status').className = 'status';
+    if(document.getElementById('status').textContent === '🎤 Listening... say TIME'){
+      document.getElementById('status').textContent = 'Ready — say TIME or tap the clock';
+    }
+  };
+  recognition.start();
+}
+
+// SET ALARM
+function setAlarm() {
+  const mins = parseInt(document.getElementById('alarm-mins').value);
+  const msg = document.getElementById('alarm-msg').value.trim() || 'Your alarm is going off!';
+  if (!mins || mins < 1) { alert('Enter minutes for the alarm!'); return; }
+  const fireAt = new Date(Date.now() + mins * 60000);
+  const id = Date.now();
+  alarms.push({ id, fireAt, msg, fired: false });
+  document.getElementById('alarm-mins').value = '';
+  document.getElementById('alarm-msg').value = '';
+  renderAlarms();
+  // Confirmation speech
+  const h = fireAt.getHours() % 12 || 12;
+  const m = String(fireAt.getMinutes()).padStart(2, '0');
+  const ap = fireAt.getHours() >= 12 ? 'PM' : 'AM';
+  speak(`Alarm set for ${h}:${m} ${ap}. I'll remind you to ${msg}`);
+}
+
+function deleteAlarm(id) {
+  alarms = alarms.filter(a => a.id !== id);
+  renderAlarms();
+}
+
+function renderAlarms() {
+  const list = document.getElementById('alarm-list');
+  if (!alarms.length) { list.innerHTML = ''; return; }
+  list.innerHTML = alarms.map(a => {
+    const h = a.fireAt.getHours() % 12 || 12;
+    const m = String(a.fireAt.getMinutes()).padStart(2, '0');
+    const ap = a.fireAt.getHours() >= 12 ? 'PM' : 'AM';
+    return `<div class="alarm-item">
+      <span class="alarm-time">${h}:${m} ${ap}</span>
+      <span>${a.msg}</span>
+      <button class="del-btn" onclick="deleteAlarm(${a.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function checkAlarms(now) {
+  alarms.forEach(a => {
+    if (!a.fired && now >= a.fireAt) {
+      a.fired = true;
+      triggerAlarm(a.msg);
+      renderAlarms();
+    }
+  });
+  alarms = alarms.filter(a => !a.fired);
+}
+
+function triggerAlarm(msg) {
+  document.getElementById('ring-msg').textContent = `⏰ ${msg}`;
+  document.getElementById('ringing-overlay').classList.add('show');
+  speak(`Attention! ${msg}. This is your TalkWatch reminder!`);
+}
+
+function dismissAlarm() {
+  document.getElementById('ringing-overlay').classList.remove('show');
+  window.speechSynthesis.cancel();
+}
+
+// SEND LOCATION via email + announce
+function sendLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lng = pos.coords.longitude.toFixed(5);
+      const mapsLink = `https://maps.google.com/?q=${lat},${lng}`;
+      const subject = encodeURIComponent('TalkWatch — My Last Known Location');
+      const body = encodeURIComponent(`My last known location:\n\nLatitude: ${lat}\nLongitude: ${lng}\n\nGoogle Maps: ${mapsLink}\n\nSent by TalkWatch EMERGENT`);
+      speak(`Your location is latitude ${lat}, longitude ${lng}. Sending to your email now.`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    }, () => {
+      speak("Location unavailable. Please enable location services in your phone settings.");
+    });
+  } else {
+    speak("Location services not supported on this device.");
+  }
+}
+
+// EMERGENCY WARNING — triggered by HELP, OUCH, CALL 911 etc.
+function triggerEmergencyWarning(trigger) {
+  const isCritical = trigger.includes('911') || trigger.includes('emergency');
+  document.getElementById('emergency-overlay').classList.add('show');
+  document.getElementById('location-display').textContent = '📍 Getting your location...';
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lng = pos.coords.longitude.toFixed(5);
+      document.getElementById('location-display').textContent = `📍 ${lat}, ${lng}`;
+      const locMsg = `latitude ${lat}, longitude ${lng}`;
+      runEmergencySequence(locMsg, isCritical);
+    }, () => {
+      document.getElementById('location-display').textContent = '📍 Enable location in Settings for full feature';
+      runEmergencySequence('location unavailable', isCritical);
+    });
+  } else {
+    runEmergencySequence('location unavailable', isCritical);
+  }
+}
+
+function runEmergencySequence(locMsg, dialNow) {
+  // Step 1 — Alert tone
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  function beep(freq, start, dur) {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.8, ctx.currentTime + start);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+    o.start(ctx.currentTime + start);
+    o.stop(ctx.currentTime + start + dur);
+  }
+  beep(1200,0,0.2);beep(800,0.25,0.2);beep(1200,0.5,0.2);beep(800,0.75,0.2);
+
+  if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+  setTimeout(()=>{ speak("Alert. Distress signal detected."); }, 500);
+  setTimeout(()=>{ speak("9 1 1 is being called."); }, 2500);
+  setTimeout(()=>{ speak("Connecting now. Do you wish to stay on the line?"); }, 4500);
+  setTimeout(()=>{ speak(`Your location is ${locMsg}. Stay calm. Help is on the way.`); }, 7000);
+  // Start TalkWatch stamp loop
+  setTimeout(()=>{ startCallStamp(); }, 9000);
+
+  if(dialNow){
+    setTimeout(()=>{ window.location.href = 'tel:911'; }, 6000);
+  }
+}
+
+// PHONE FINDER
+function findPhone() {
+  document.getElementById('status').textContent = '📱 FINDING YOUR PHONE...';
+  document.getElementById('status').className = 'status active';
+  speak("Finding your phone now! Follow the sound!");
+  // Vibrate pattern — long bursts
+  if (navigator.vibrate) {
+    navigator.vibrate([500,200,500,200,500,200,500,200,500,200,500,200,500]);
+  }
+  // Play loud alarm sound using Web Audio
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  function beep(freq, start, dur) {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(1, ctx.currentTime + start);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+    o.start(ctx.currentTime + start);
+    o.stop(ctx.currentTime + start + dur);
+  }
+  for(let i=0;i<10;i++){beep(880,i*0.4,0.3);beep(440,i*0.4+0.15,0.2);}
+  // Show phone finder overlay
+  document.getElementById('phone-overlay').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('status').textContent = 'Ready — say TIME or tap the clock';
+    document.getElementById('status').className = 'status';
+  }, 5000);
+}
+
+// CALL 911
+function call911() {
+  if (!confirm("⚠️ EMERGENCY — Call 911 now?")) return;
+  document.getElementById('status').textContent = '🚨 CALLING 911...';
+  document.getElementById('status').className = 'status active';
+  // Get GPS location first
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lng = pos.coords.longitude.toFixed(5);
+      const locMsg = `My GPS coordinates are latitude ${lat} and longitude ${lng}. Please send help to this location immediately.`;
+      document.getElementById('location-display').textContent = `📍 ${lat}, ${lng}`;
+      document.getElementById('emergency-overlay').classList.add('show');
+      speak(`Calling 911 now. ${locMsg}`);
+      // Open phone dialer
+      setTimeout(() => { window.location.href = 'tel:911'; }, 2000);
+    }, () => {
+      document.getElementById('location-display').textContent = '📍 Location unavailable — enable location in Settings';
+      document.getElementById('emergency-overlay').classList.add('show');
+      speak("Calling 911 now. Location unavailable. Please enable location services.");
+      setTimeout(() => { window.location.href = 'tel:911'; }, 2000);
+    });
+  } else {
+    window.location.href = 'tel:911';
+  }
+}
+
+// WAKE LOCK — keep screen on
+let wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      document.getElementById('awake-badge').textContent = '🟡 Screen staying on';
+      document.getElementById('awake-badge').style.color = 'rgba(239,159,39,0.7)';
+      wakeLock.addEventListener('release', () => {
+        document.getElementById('awake-badge').textContent = '⚪ Screen lock released — tap to reactivate';
+      });
+    } else {
+      document.getElementById('awake-badge').textContent = '⚠️ Set screen timeout to Never in Settings';
+    }
+  } catch(e) {
+    document.getElementById('awake-badge').textContent = '⚠️ Set screen timeout to Never in Settings';
+  }
+}
+// Re-request wake lock when page becomes visible again
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    await requestWakeLock();
+  }
+});
+requestWakeLock();
+
+// Load voices on mobile
+window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+
+// AUTO FETCH LOCATION FOR RING DISPLAY
+function fetchLocationForRing() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lng = pos.coords.longitude.toFixed(5);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await res.json();
+        const road = data.address.road || '';
+        const city = data.address.city || data.address.town || data.address.suburb || '';
+        const state = data.address.state || '';
+        const display = road && city ? `${road}, ${city}, ${state}` : `${lat}, ${lng}`;
+        document.getElementById('ring-location').textContent = display;
+        document.getElementById('ring-location').style.color = '#EF9F27';
+        // Refresh every 2 minutes
+        setTimeout(fetchLocationForRing, 120000);
+      } catch(e) {
+        document.getElementById('ring-location').textContent = `${lat}, ${lng}`;
+      }
+    }, () => {
+      document.getElementById('ring-location').innerHTML = '<span style="color:rgba(239,159,39,0.4);cursor:pointer;" onclick="fetchLocationForRing()">tap to display location — enable location in Settings</span>';
+    });
+  } else {
+    document.getElementById('ring-location').textContent = 'location unavailable';
+  }
+}
+
+// START
+if (!userName) { setTimeout(getUserName, 1500); }
+fetchLocationForRing();
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+</body>
+</html>
